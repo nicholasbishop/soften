@@ -24,25 +24,42 @@ class Config(object):
     name = attr.ib()
     version = attr.ib()
     deps = attr.ib()
+    repo_path = attr.ib()
 
     @classmethod
-    def parse(cls, string):
+    def parse(cls, string, repo_path):
         parsed = able.parse(string)
         deps = dependencies.Dependencies.from_pairs(parsed['deps'])
         return cls(name=parsed['name'],
                    version=parsed['version'],
-                   deps=deps)
+                   deps=deps,
+                   repo_path=repo_path)
 
     @classmethod
     def load(cls, path):
         with open(path) as rfile:
-            return cls.parse(rfile.read())
+            return cls.parse(rfile.read(), os.path.dirname(path))
 
 
 def parse_cli_args():
     parser = argparse.ArgumentParser(prog='soften', description='simplify python packaging')
-    parser.add_argument('command', nargs='?', choices=('bump',))
+    parser.add_argument('command', nargs='?', choices=('bump', 'release'))
     return parser.parse_args()
+
+
+def sync(config):
+    setup_py = codegen.Module([
+        codegen.Import('setuptools'),
+        codegen.Call('setuptools.setup',
+                     name=config.name,
+                     version=config.version)],
+                              executable=True)
+
+    path_setup_py = os.path.join(config.repo_path, 'setup.py')
+    write_file(path_setup_py, str(setup_py))
+
+    path_requirements_txt = os.path.join(config.repo_path, 'requirements.txt')
+    write_file(path_requirements_txt, config.deps.format_requirements())
 
 
 def main():
@@ -50,17 +67,4 @@ def main():
 
     config = Config.load(find_config())
 
-    module = codegen.Module([codegen.Import('setuptools'),
-                             codegen.Call('setuptools.setup',
-                                          name=config.name,
-                                          version=config.version)],
-                            executable=True)
-
-    # TODO
-    repo_path = ''
-
-    path_setup_py = os.path.join(repo_path, 'setup.py')
-    write_file(path_setup_py, str(module))
-
-    path_requirements_txt = os.path.join(repo_path, 'requirements.txt')
-    write_file(path_requirements_txt, config.deps.format_requirements())
+    sync(config)
