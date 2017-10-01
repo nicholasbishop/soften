@@ -3,8 +3,7 @@ import os
 import able
 import attr
 
-def generate_setup_py():
-    yield 'from setuptools import setup'
+from soften import codegen
 
 
 def write_file(path, content):
@@ -38,9 +37,15 @@ class Config(object):
 
 def main():
     config = Config.load(find_config())
-    # TODO
-    # repo_path = ''
 
-    # path_setup_py = os.path.join(repo_path, 'setup.py')
-    # write_file(path_setup_py, generate_setup_py(repo_path))
-    pass
+    module = codegen.Module([codegen.Import('setuptools'),
+                             codegen.Call('setuptools.setup',
+                                          name=config.name,
+                                          version=config.version)],
+                            executable=True)
+
+    # TODO
+    repo_path = ''
+
+    path_setup_py = os.path.join(repo_path, 'setup.py')
+    write_file(path_setup_py, str(module))
