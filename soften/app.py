@@ -1,5 +1,6 @@
 import argparse
 import os
+import unittest
 
 import able
 import attr
@@ -37,8 +38,9 @@ class Config(object):
 
     @classmethod
     def load(cls, path):
+        repo_path = os.path.abspath(os.path.dirname(path))
         with open(path) as rfile:
-            return cls.parse(rfile.read(), os.path.dirname(path))
+            return cls.parse(rfile.read(), repo_path)
 
 
 def parse_cli_args():
@@ -62,9 +64,21 @@ def sync(config):
     write_file(path_requirements_txt, config.deps.format_requirements())
 
 
+def run_tests(config):
+    tests = unittest.defaultTestLoader.discover(config.repo_path)
+    unittest.TextTestRunner().run(tests)
+
+
+def do_release(config):
+    run_tests(config)
+
+
 def main():
     cli_args = parse_cli_args()
 
     config = Config.load(find_config())
 
     sync(config)
+
+    if cli_args.command == 'release':
+        do_release(config)
