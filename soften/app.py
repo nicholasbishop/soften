@@ -1,4 +1,5 @@
 import argparse
+import logging
 import os
 import unittest
 
@@ -7,6 +8,7 @@ import attr
 
 from soften import codegen, dependencies
 
+LOG = logging.getLogger(__name__)
 
 def write_file(path, content):
     with open(path, 'w') as wfile:
@@ -45,8 +47,24 @@ class Config(object):
 
 def parse_cli_args():
     parser = argparse.ArgumentParser(prog='soften', description='simplify python packaging')
-    parser.add_argument('command', nargs='?', choices=('bump', 'release'))
+    parser.add_argument('command', nargs='?',
+                        choices=('bump', 'format', 'release', 'test'))
+    parser.add_argument('-v', '--verbose', action='store_true')
     return parser.parse_args()
+
+
+def ensure_directory_exists(path):
+    if not os.path.exists(path):
+        LOG.info('creating directory %s', path)
+        os.makedirs(path)
+
+
+def ensure_package_exists(path):
+    ensure_directory_exists(path)
+    path_init_py = os.path.join(path, '__init__.py')
+    if not os.path.exists(path_init_py):
+        LOG.info('creating empty file %s', path_init_py)
+        open(path_init_py, 'w').close()
 
 
 def sync(config):
@@ -63,6 +81,8 @@ def sync(config):
     path_requirements_txt = os.path.join(config.repo_path, 'requirements.txt')
     write_file(path_requirements_txt, config.deps.format_requirements())
 
+    ensure_package_exists(os.path.join(config.repo_path, 'tests'))
+
 
 def run_tests(config):
     tests = unittest.defaultTestLoader.discover(config.repo_path)
@@ -73,12 +93,24 @@ def do_release(config):
     run_tests(config)
 
 
+def reformat_code(config):
+    pass
+
+
 def main():
     cli_args = parse_cli_args()
+    if cli_args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
 
     config = Config.load(find_config())
 
     sync(config)
 
-    if cli_args.command == 'release':
+    if cli_args.command == 'format':
+        reformat_code(config)
+    elif cli_args.command == 'release':
         do_release(config)
+    elif cli_args.command == 'test':
+        run_tests(config)
