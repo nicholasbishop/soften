@@ -1,5 +1,6 @@
 import attr
 
+
 @attr.s
 class Dependency(object):
     name = attr.ib()

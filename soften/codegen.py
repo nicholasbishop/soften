@@ -1,6 +1,7 @@
 import attr
 from yapf.yapflib import yapf_api
 
+
 @attr.s(init=False, slots=True)
 class Call(object):
     name = attr.ib()

@@ -5,10 +5,12 @@ import unittest
 
 import able
 import attr
+from yapf.yapflib import yapf_api
 
 from soften import codegen, dependencies
 
 LOG = logging.getLogger(__name__)
+
 
 def write_file(path, content):
     with open(path, 'w') as wfile:
@@ -33,10 +35,11 @@ class Config(object):
     def parse(cls, string, repo_path):
         parsed = able.parse(string)
         deps = dependencies.Dependencies.from_pairs(parsed['deps'])
-        return cls(name=parsed['name'],
-                   version=parsed['version'],
-                   deps=deps,
-                   repo_path=repo_path)
+        return cls(
+            name=parsed['name'],
+            version=parsed['version'],
+            deps=deps,
+            repo_path=repo_path)
 
     @classmethod
     def load(cls, path):
@@ -46,9 +49,10 @@ class Config(object):
 
 
 def parse_cli_args():
-    parser = argparse.ArgumentParser(prog='soften', description='simplify python packaging')
-    parser.add_argument('command', nargs='?',
-                        choices=('bump', 'format', 'release', 'test'))
+    parser = argparse.ArgumentParser(
+        prog='soften', description='simplify python packaging')
+    parser.add_argument(
+        'command', nargs='?', choices=('bump', 'format', 'release', 'test'))
     parser.add_argument('-v', '--verbose', action='store_true')
     return parser.parse_args()
 
@@ -68,12 +72,13 @@ def ensure_package_exists(path):
 
 
 def sync(config):
-    setup_py = codegen.Module([
-        codegen.Import('setuptools'),
-        codegen.Call('setuptools.setup',
-                     name=config.name,
-                     version=config.version)],
-                              executable=True)
+    setup_py = codegen.Module(
+        [
+            codegen.Import('setuptools'),
+            codegen.Call(
+                'setuptools.setup', name=config.name, version=config.version)
+        ],
+        executable=True)
 
     path_setup_py = os.path.join(config.repo_path, 'setup.py')
     write_file(path_setup_py, str(setup_py))
@@ -94,7 +99,10 @@ def do_release(config):
 
 
 def reformat_code(config):
-    pass
+    # TODO
+    import glob
+    for path in glob.glob(os.path.join(config.repo_path, '*/*.py')):
+        yapf_api.FormatFile(path, in_place=True)
 
 
 def main():
