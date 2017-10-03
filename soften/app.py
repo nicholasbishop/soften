@@ -7,7 +7,7 @@ import able
 import attr
 from yapf.yapflib import yapf_api
 
-from soften import codegen, dependencies
+from soften import codegen
 
 LOG = logging.getLogger(__name__)
 
@@ -82,9 +82,6 @@ def sync(config):
 
     path_setup_py = os.path.join(config.repo_path, 'setup.py')
     write_file(path_setup_py, str(setup_py))
-
-    path_requirements_txt = os.path.join(config.repo_path, 'requirements.txt')
-    write_file(path_requirements_txt, config.deps.format_requirements())
 
     ensure_package_exists(os.path.join(config.repo_path, 'tests'))
 
