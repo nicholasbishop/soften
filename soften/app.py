@@ -1,10 +1,16 @@
+# coding=utf-8
+
+from __future__ import print_function
+
 import argparse
+import copy
 import logging
 import os
 import unittest
 
 import able
 import attr
+import numeric_version
 from yapf.yapflib import yapf_api
 
 from soften import codegen
@@ -28,21 +34,28 @@ def find_config():
 class Config(object):
     name = attr.ib()
     version = attr.ib()
-    repo_path = attr.ib()
+    repo_path = attr.ib(default=None)
+    config_path = attr.ib(default=None)
 
     @classmethod
-    def parse(cls, string, repo_path):
+    def parse(cls, string):
         parsed = able.parse(string)
         return cls(
             name=parsed['name'],
-            version=parsed['version'],
-            repo_path=repo_path)
+            version=numeric_version.NumericVersion.parse(parsed['version']))
 
     @classmethod
     def load(cls, path):
-        repo_path = os.path.abspath(os.path.dirname(path))
         with open(path) as rfile:
-            return cls.parse(rfile.read(), repo_path)
+            config = cls.parse(rfile.read())
+        config.repo_path = os.path.abspath(os.path.dirname(path))
+        config.config_path = path
+        return config
+
+    # def write(cls, path):
+    #     # TODO(nicholasbishop): preserve comments in the file
+    #     with open(config.config_path) as wfile:
+    #         config = able.write(
 
 
 def parse_cli_args():
@@ -99,6 +112,16 @@ def reformat_code(config):
         yapf_api.FormatFile(path, in_place=True)
 
 
+def increment_version(config):
+    current = config.version
+    # TODO
+    major, minor, patch = list(current.parts)
+    patch += 1
+    new = numeric_version.NumericVersion(major, minor, patch)
+    print('{} → {}'.format(current, new))
+    
+
+
 def main():
     cli_args = parse_cli_args()
     if cli_args.verbose:
@@ -110,7 +133,9 @@ def main():
 
     sync(config)
 
-    if cli_args.command == 'format':
+    if cli_args.command == 'bump':
+        increment_version(config)
+    elif cli_args.command == 'format':
         reformat_code(config)
     elif cli_args.command == 'release':
         do_release(config)
