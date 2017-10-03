@@ -28,17 +28,14 @@ def find_config():
 class Config(object):
     name = attr.ib()
     version = attr.ib()
-    deps = attr.ib()
     repo_path = attr.ib()
 
     @classmethod
     def parse(cls, string, repo_path):
         parsed = able.parse(string)
-        deps = dependencies.Dependencies.from_pairs(parsed['deps'])
         return cls(
             name=parsed['name'],
             version=parsed['version'],
-            deps=deps,
             repo_path=repo_path)
 
     @classmethod
