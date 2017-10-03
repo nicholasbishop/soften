@@ -1,0 +1,73 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "c26b209ef4ec421837151527e76f5c0fd28c5f285cfae98430484faeecf9ba1a"
+        },
+        "host-environment-markers": {
+            "implementation_name": "cpython",
+            "implementation_version": "0",
+            "os_name": "posix",
+            "platform_machine": "x86_64",
+            "platform_python_implementation": "CPython",
+            "platform_release": "4.12.13-20170913.amdstg.fc26.x86_64",
+            "platform_system": "Linux",
+            "platform_version": "#1 SMP Fri Sep 15 11:02:59 UTC 2017",
+            "python_full_version": "2.7.13",
+            "python_version": "2.7",
+            "sys_platform": "linux2"
+        },
+        "pipfile-spec": 6,
+        "requires": {},
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.python.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "able": {
+            "hashes": [
+                "sha256:d290f8578df1b9f70e3f954d91add32074b22579c6c8ccc57db2a43a19b15a13",
+                "sha256:0b07f4e4681142ebb7fd666ceb161b62b089790d4dddaf287a3a7d32334b571a"
+            ],
+            "version": "==0.1.2"
+        },
+        "attrs": {
+            "hashes": [
+                "sha256:a7e0d9183f6457de12df7ba6a81f6569c7d6b25f67ad509b5ad52e8545970a2f",
+                "sha256:5d4d1b99f94d69338f485984127e4473b3ab9e20f43821b0e546cc3b2302fd11"
+            ],
+            "version": "==17.2.0"
+        },
+        "lictionary": {
+            "hashes": [
+                "sha256:51055bd4b871479f2b3954d249afe7ae3e9dc2214abf7c747a7f31a32a70e6e3",
+                "sha256:8de3e0bfef550e14938f491cd1c2df3315be315676a03a66231f7b28c7b3454e"
+            ],
+            "version": "==0.1.2"
+        },
+        "numeric-version": {
+            "hashes": [
+                "sha256:2faac2d4145446a1add9c2301039e0b1c56aed79868f545c9deb6a35e19eb210"
+            ],
+            "version": "==1.0.3"
+        },
+        "tatsu": {
+            "hashes": [
+                "sha256:02e4c367d98b6bcdf024dcbf0576c66b039ca496615e460ce422b008da58e32a",
+                "sha256:ce61d03cf06db74116ac5800437f12c557fa91bdc19be358c69d4da8af72c691"
+            ],
+            "version": "==4.2.3"
+        },
+        "yapf": {
+            "hashes": [
+                "sha256:b6a47545511839861ae92108476c119de27a4b137f380f2fd452bcc39bcd6c31",
+                "sha256:c703dbe4ec882061184a4ae128d2fefcae00641bb4c73df9b85fd0ea05294354"
+            ],
+            "version": "==0.18.0"
+        }
+    },
+    "develop": {}
+}
