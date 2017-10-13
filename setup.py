@@ -4,4 +4,4 @@
 
 import setuptools
 
-setuptools.setup(version='0.1.0', name='soften')
+setuptools.setup(version='0.1.1', name='soften')
