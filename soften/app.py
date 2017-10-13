@@ -36,6 +36,7 @@ class Config(object):
     version = attr.ib()
     repo_path = attr.ib(default=None)
     config_path = attr.ib(default=None)
+    cli_args = attr.ib(default=None)
 
     @classmethod
     def parse(cls, string):
@@ -52,10 +53,15 @@ class Config(object):
         config.config_path = path
         return config
 
-    # def write(cls, path):
-    #     # TODO(nicholasbishop): preserve comments in the file
-    #     with open(config.config_path) as wfile:
-    #         config = able.write(
+    def write(self):
+        string = able.serialize({
+            'name': self.name,
+            'version': str(self.version)
+        })
+        # TODO(nicholasbishop): preserve comments in the file
+        if not self.cli_args.dry_run:
+            with open(self.config_path, 'w') as wfile:
+                wfile.write(string)
 
 
 def parse_cli_args():
@@ -63,6 +69,7 @@ def parse_cli_args():
         prog='soften', description='simplify python packaging')
     parser.add_argument(
         'command', nargs='?', choices=('bump', 'format', 'release', 'test'))
+    parser.add_argument('-d', '--dry-run', action='store_true')
     parser.add_argument('-v', '--verbose', action='store_true')
     return parser.parse_args()
 
@@ -119,7 +126,8 @@ def increment_version(config):
     patch += 1
     new = numeric_version.NumericVersion(major, minor, patch)
     print('{} → {}'.format(current, new))
-    
+    config.version = new
+    config.write()
 
 
 def main():
@@ -130,6 +138,7 @@ def main():
         logging.basicConfig(level=logging.WARNING)
 
     config = Config.load(find_config())
+    config.cli_args = cli_args
 
     sync(config)
 
