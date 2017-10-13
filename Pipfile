@@ -11,3 +11,4 @@ able = "*"
 yapf = "*"
 "numeric-version" = "*"
 attrs = "*"
+"5c44524" = {path = "../able", editable = true}
