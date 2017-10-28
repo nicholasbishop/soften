@@ -4,4 +4,7 @@
 
 import setuptools
 
-setuptools.setup(version='0.1.1', name='soften')
+setuptools.setup(
+    name='soften',
+    version='0.1.1',
+    entry_points={'console_scripts': ['soften = soften']})
