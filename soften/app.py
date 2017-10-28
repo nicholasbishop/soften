@@ -4,8 +4,10 @@ from __future__ import print_function
 
 import argparse
 import copy
+import glob
 import logging
 import os
+import subprocess
 import unittest
 
 import able
@@ -63,6 +65,10 @@ class Config(object):
             with open(self.config_path, 'w') as wfile:
                 wfile.write(string)
 
+    @property
+    def dry_run(self):
+        return self.cli_args.dry_run
+
 
 def parse_cli_args():
     parser = argparse.ArgumentParser(
@@ -88,14 +94,27 @@ def ensure_package_exists(path):
         open(path_init_py, 'w').close()
 
 
+def has_main(config):
+    # TODO
+    return True
+
+
 def sync(config):
-    setup_py = codegen.Module(
-        [
-            codegen.Import('setuptools'),
-            codegen.Call(
-                'setuptools.setup', name=config.name, version=config.version)
-        ],
-        executable=True)
+    keys = {
+        'name': config.name,
+        'version': config.version,
+    }
+    if has_main(config):
+        keys['entry_points'] = {
+            'console_scripts': [
+                'soften = soften'
+            ]
+        }
+
+    setup_py = codegen.Module([
+        codegen.Import('setuptools'),
+        codegen.Call('setuptools.setup', **keys)
+    ], executable=True)
 
     path_setup_py = os.path.join(config.repo_path, 'setup.py')
     write_file(path_setup_py, str(setup_py))
@@ -108,8 +127,36 @@ def run_tests(config):
     unittest.TextTestRunner().run(tests)
 
 
+def run_cmd(*cmd, **kwargs):
+    dry_run = kwargs.get('dry_run', False)
+
+    logging.info('%s', ' '.join(cmd))
+    if not dry_run:
+        subprocess.check_call(cmd)
+
+
+def create_distributions(config):
+    # TODO
+    cmd = ['python', 'setup.py', 'build', '-v', 'sdist']
+    # TODO: build has a --dry-run arg, but it makes the commend fail
+    # if config.dry_run:
+    #     cmd.append('--dry-run')
+    run_cmd(*cmd, dry_run=config.dry_run)
+
+
+def upload_distributions(config):
+    # TODO
+    cmd = ['twine', 'upload', '--skip-existing']
+    # TODO
+    cmd += list(glob.glob('dist/*'))
+    run_cmd(*cmd, dry_run=config.dry_run)
+
+
 def do_release(config):
+    logging.debug('do_release')
     run_tests(config)
+    create_distributions(config)
+    upload_distributions(config)
 
 
 def reformat_code(config):
