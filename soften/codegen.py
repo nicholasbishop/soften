@@ -1,5 +1,38 @@
+from collections import abc
+
 import attr
 from yapf.yapflib import yapf_api
+
+
+def stringify_dict(dct):
+    parts = []
+    for key, val in dct.items():
+        parts.append('{}: {}'.format(stringify(key), stringify(val)))
+    return '{{{}}}'.format(', '.join(parts))
+
+
+def stringify_str(string):
+    if "'" in string or '"' in string:
+        raise NotImplementedError('stringifying strings with quotes', string)
+    return "'{}'".format(string)
+
+
+def stringify_seq(seq):
+    parts = []
+    for elem in seq:
+        parts.append(stringify(elem))
+    return '[{}]'.format(', '.join(parts))
+
+
+def stringify(obj):
+    if isinstance(obj, abc.Mapping):
+        return stringify_dict(obj)
+    elif isinstance(obj, str):
+        return stringify_str(obj)
+    elif isinstance(obj, abc.Sequence):
+        return stringify_seq(obj)
+    else:
+        return stringify_str(str(obj))
 
 
 @attr.s(init=False, slots=True)
@@ -15,7 +48,7 @@ class Call(object):
 
     def formatted_kwargs(self):
         for key, value in self.kwargs.items():
-            yield "{}='{}'".format(key, value)
+            yield "{}={}".format(key, stringify(value))
 
     def __str__(self):
         all_args = list(self.args) + list(self.formatted_kwargs())
