@@ -12,9 +12,10 @@ setuptools.setup(
     author_email='nicholasbishop@gmail.com',
     packages=['soften'],
     install_requires=[
-        'able', 'attrs', 'certifi', 'chardet', 'idna', 'lictionary',
-        'numeric-version', 'pkginfo', 'requests', 'requests-toolbelt', 'six',
-        'tatsu', 'tqdm', 'twine', 'urllib3', 'yapf'
+        'able', 'attrs', 'certifi', 'chardet', 'gitdb2', 'gitpython', 'idna',
+        'lictionary', 'numeric-version', 'pkginfo', 'requests',
+        'requests-toolbelt', 'six', 'smmap2', 'tatsu', 'tqdm', 'twine',
+        'urllib3', 'yapf'
     ],
     entry_points={
         'console_scripts': ['soften = soften.app:main']
