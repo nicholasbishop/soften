@@ -34,8 +34,12 @@ def find_config():
 
 @attr.s
 class Config(object):
+    author = attr.ib()
+    email = attr.ib()
     name = attr.ib()
+    url = attr.ib()
     version = attr.ib()
+
     repo_path = attr.ib(default=None)
     config_path = attr.ib(default=None)
     cli_args = attr.ib(default=None)
@@ -44,7 +48,10 @@ class Config(object):
     def parse(cls, string):
         parsed = able.parse(string)
         return cls(
+            author=parsed['author'],
+            email=parsed['email'],
             name=parsed['name'],
+            url=parsed['url'],
             version=numeric_version.NumericVersion.parse(parsed['version']))
 
     @classmethod
@@ -103,6 +110,9 @@ def sync(config):
     keys = {
         'name': config.name,
         'version': config.version,
+        'author': config.author,
+        'url': config.url,
+        'author_email': config.email,
     }
     if has_main(config):
         keys['entry_points'] = {'console_scripts': ['soften = soften']}
