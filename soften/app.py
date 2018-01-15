@@ -128,7 +128,20 @@ def ensure_lines_exist(path, *lines):
 def update_gitignore(config):
     name = '.gitignore'
     path = os.path.join(config.repo_path, name)
-    ensure_lines_exist(path, '*.pyc', '__pycache__/', 'dist/', '*.egg-info/')
+    ensure_lines_exist(path, '*.pyc', '__pycache__/', 'build/', 'dist/',
+                       '*.egg-info/')
+
+
+def get_dependencies():
+    # TODO(nicholasbishop): use API if exists
+    cmd = ('pipenv', 'lock', '--requirements')
+    lines = subprocess.check_output(cmd).decode('utf-8').splitlines()
+    for line in lines:
+        # TODO(nicholasbishop): keep version specifier
+        parts = line.split()
+        req = parts[0]
+        parts = req.split('==')
+        yield parts[0]
 
 
 def sync(config):
@@ -138,6 +151,8 @@ def sync(config):
         'author': config.author,
         'url': config.url,
         'author_email': config.email,
+        'packages': [config.name],
+        'install_requires': list(get_dependencies())
     }
     if has_main(config):
         keys['entry_points'] = {
