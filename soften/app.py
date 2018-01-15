@@ -107,19 +107,20 @@ def has_main(config):
 
 
 def ensure_lines_exist(path, *lines):
-    with open(path) as rfile:
-        output_lines = rfile.readlines()
+    try:
+        with open(path) as rfile:
+            output_lines = rfile.readlines()
+    except FileNotFoundError:
+        output_lines = []
 
-    found = False
     for line1 in lines:
+        found = False
         for line2 in output_lines:
             if line1.strip() == line2.strip():
                 found = True
                 break
-        if found:
-            break
-    if not found:
-        output_lines.append(line + '\n')
+        if not found:
+            output_lines.append(line1 + '\n')
 
     with open(path, 'w') as wfile:
         wfile.write(''.join(output_lines))
