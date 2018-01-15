@@ -105,16 +105,14 @@ def sync(config):
         'version': config.version,
     }
     if has_main(config):
-        keys['entry_points'] = {
-            'console_scripts': [
-                'soften = soften'
-            ]
-        }
+        keys['entry_points'] = {'console_scripts': ['soften = soften']}
 
-    setup_py = codegen.Module([
-        codegen.Import('setuptools'),
-        codegen.Call('setuptools.setup', **keys)
-    ], executable=True)
+    setup_py = codegen.Module(
+        [
+            codegen.Import('setuptools'),
+            codegen.Call('setuptools.setup', **keys)
+        ],
+        executable=True)
 
     path_setup_py = os.path.join(config.repo_path, 'setup.py')
     write_file(path_setup_py, str(setup_py))
