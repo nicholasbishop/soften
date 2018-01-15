@@ -12,6 +12,7 @@ import unittest
 
 import able
 import attr
+import git
 import numeric_version
 from yapf.yapflib import yapf_api
 
@@ -106,6 +107,11 @@ def has_main(config):
     return True
 
 
+def git_add_files(config):
+    repo = git.Repo(config.repo_path)
+    repo.index.add(['.gitignore', '.soften.able', 'Pipfile', 'Pipfile.lock'])
+
+
 def ensure_lines_exist(path, *lines):
     try:
         with open(path) as rfile:
@@ -176,6 +182,7 @@ def sync(config):
 
     ensure_package_exists(os.path.join(config.repo_path, 'tests'))
     update_gitignore(config)
+    git_add_files(config)
 
 
 def run_tests(config):
