@@ -106,6 +106,31 @@ def has_main(config):
     return True
 
 
+def ensure_lines_exist(path, *lines):
+    with open(path) as rfile:
+        output_lines = rfile.readlines()
+
+    found = False
+    for line1 in lines:
+        for line2 in output_lines:
+            if line1.strip() == line2.strip():
+                found = True
+                break
+        if found:
+            break
+    if not found:
+        output_lines.append(line + '\n')
+
+    with open(path, 'w') as wfile:
+        wfile.write(''.join(output_lines))
+
+
+def update_gitignore(config):
+    name = '.gitignore'
+    path = os.path.join(config.repo_path, name)
+    ensure_lines_exist(path, '*.pyc', '__pycache__/', 'dist/', '*.egg-info/')
+
+
 def sync(config):
     keys = {
         'name': config.name,
@@ -129,6 +154,7 @@ def sync(config):
     os.chmod(path_setup_py, 0o777)
 
     ensure_package_exists(os.path.join(config.repo_path, 'tests'))
+    update_gitignore(config)
 
 
 def run_tests(config):
