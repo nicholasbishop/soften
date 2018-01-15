@@ -137,6 +137,9 @@ def get_dependencies():
     cmd = ('pipenv', 'lock', '--requirements')
     lines = subprocess.check_output(cmd).decode('utf-8').splitlines()
     for line in lines:
+        line = line.strip()
+        if not line:
+            continue
         # TODO(nicholasbishop): keep version specifier
         parts = line.split()
         req = parts[0]
