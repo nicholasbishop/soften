@@ -11,5 +11,5 @@ setuptools.setup(
     url='https://github.com/nicholasbishop/soften',
     author_email='nicholasbishop@gmail.com',
     entry_points={
-        'console_scripts': ['soften = soften']
+        'console_scripts': ['soften = soften.app:main']
     })

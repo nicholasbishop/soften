@@ -140,7 +140,9 @@ def sync(config):
         'author_email': config.email,
     }
     if has_main(config):
-        keys['entry_points'] = {'console_scripts': ['soften = soften']}
+        keys['entry_points'] = {
+            'console_scripts': ['soften = soften.app:main']
+        }
 
     setup_py = codegen.Module(
         [
