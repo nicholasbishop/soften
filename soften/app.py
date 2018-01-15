@@ -116,6 +116,7 @@ def sync(config):
 
     path_setup_py = os.path.join(config.repo_path, 'setup.py')
     write_file(path_setup_py, str(setup_py))
+    os.chmod(path_setup_py, 0o777)
 
     ensure_package_exists(os.path.join(config.repo_path, 'tests'))
 
