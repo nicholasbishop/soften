@@ -103,8 +103,9 @@ def ensure_package_exists(path):
 
 
 def has_main(config):
-    # TODO
-    return True
+    """Return True if the package has a __main__.py."""
+    path = os.path.join(config.repo_path, config.name, '__main__.py')
+    return os.path.exists(path)
 
 
 def git_add_files(config):
