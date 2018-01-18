@@ -110,7 +110,7 @@ def has_main(config):
 def git_add_files(config):
     repo = git.Repo(config.repo_path)
     repo.index.add(['.gitignore', '.soften.able', 'Pipfile', 'Pipfile.lock',
-                    'setup.py', 'tests'])
+                    'setup.py', 'tests/__init__.py'])
 
 
 def ensure_lines_exist(path, *lines):
